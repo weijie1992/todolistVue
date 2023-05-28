@@ -10,6 +10,7 @@ module.exports = {
   rules: {
     'vue/multi-word-component-names': 'off',
     'vue/no-multiple-template-root': 'off',
-    'prettier/prettier': ['error', { endOfLine: 'auto' }]
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
+    'vue/comment-directive': 0
   }
 }

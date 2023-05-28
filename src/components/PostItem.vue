@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from 'vue'
 import { Post } from '../types/post'
 
 defineProps<{ post: Post }>()

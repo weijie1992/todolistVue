@@ -7,15 +7,20 @@ import { Post } from '../types/post'
 
 const initialState: PostState = {
   posts: [{ id: '1', title: 'Title test', created: DateTime.now().toISODate() || '', markdown: '', html: '' }],
-  selected: '2023-05-28'
+  selected: DateTime.now().toISODate() as string
 }
 
 export const usePostsStore = defineStore('posts', {
-  state: (): PostState => initialState,
+  state: (): PostState => ({
+    posts: [{ id: '1', title: 'Title test', created: DateTime.now().toISODate() || '', markdown: '', html: '' }],
+    selected: DateTime.now().toISODate() as string
+}),
 
   actions: {
     setSelectedDate(date: string) {
-      this.selected = date
+      console.log("🚀 ~ file: posts.ts:21 ~ setSelectedDate ~ date:", date)
+      // this.selected = date
+      this.selected= date
     }
   },
 

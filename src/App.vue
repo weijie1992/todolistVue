@@ -16,6 +16,7 @@
   </section>
 </template>
 <style scoped>
+@import 'highlight.js/styles/atom-one-dark.css';
 .logo {
   font-weight: 600;
   font-size: 1.5rem;

@@ -15,6 +15,7 @@ if (!currentPost) {
 
 <template>
   <div>
+    <va-button :to="`${postId}/edit`">Edit</va-button>
     <h1>{{ currentPost.title }}</h1>
     <div v-html="currentPost.html" />
   </div>

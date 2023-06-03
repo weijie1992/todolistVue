@@ -1,30 +1,67 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Post } from '../types/post'
-import { usePostsStore } from '../store/posts'
-import { useRouter } from 'vue-router'
-import PostWriter from '../components/PostWriter.vue'
+import { marked } from 'marked'
+import highlightjs from 'highlight.js'
 
-const post = ref<Post>({
-  id: '',
-  title: '',
-  created: '',
-  markdown: '',
-  html: ''
-})
+const props = defineProps<{ post: Post }>()
 
-const router = useRouter()
+const emit = defineEmits<{ (event: 'submit', post: Post): void }>()
 
-const postStore = usePostsStore()
+const contentEditable = ref<HTMLDivElement>()
 
-const handleSubmit = (post: Post) => {
-  postStore.addTask(post)
-  router.push({ name: 'home' })
+const title = ref(props.post.title)
+const markdown = ref(props.post.markdown)
+const html = ref(props.post.html)
+
+const parseHtml = (content: string) => {
+  marked.parse(
+    content,
+    {
+      gfm: true,
+      breaks: true,
+      highlight: code => {
+        return highlightjs.highlightAuto(code).value
+      }
+    },
+    (_, parseResult) => {
+      html.value = parseResult
+    }
+  )
+}
+
+watch(
+  () => markdown.value,
+  newContent => parseHtml(newContent),
+  { immediate: true }
+)
+
+const handleInput = () => {
+  if (!contentEditable.value) throw 'No content'
+  markdown.value = contentEditable.value.innerText
+}
+
+const handleSubmit = () => {
+  const post: Post = {
+    id: props.post.id,
+    title: title.value,
+    created: props.post.created,
+    markdown: markdown.value,
+    html: html.value
+  }
+  emit('submit', post)
 }
 </script>
 
 <template>
-  <PostWriter :post="post" @submit="handleSubmit" />
+  <input type="text" class="input-text" placeholder="Title here" v-model="title" />
+  <div class="textarea-container">
+    <div contenteditable ref="contentEditable" @input="handleInput" class="textarea-like">{{ markdown }}</div>
+    <div v-html="html"></div>
+  </div>
+  <div class="button-container">
+    <va-button class="button" @click="handleSubmit">Save Task</va-button>
+  </div>
 </template>
 
 <style scoped>

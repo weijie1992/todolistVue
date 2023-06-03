@@ -4,8 +4,10 @@ import { Post } from '../types/post'
 defineProps<{ post: Post }>()
 </script>
 <template>
-  <va-card>
-    <va-card-title>{{ post.title }}-{{ post.created }}</va-card-title>
-    <va-card-content> {{ post.html }} </va-card-content>
-  </va-card>
+  <RouterLink :to="`posts/${post.id}`">
+    <va-card>
+      <va-card-title>{{ post.created }}</va-card-title>
+      <va-card-content> {{ post.title }} </va-card-content>
+    </va-card>
+  </RouterLink>
 </template>

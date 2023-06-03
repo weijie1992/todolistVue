@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { Post } from '../types/post'
-import debounce from 'lodash/debounce'
 import { marked } from 'marked'
 import highlightjs from 'highlight.js'
+import { usePostsStore } from '../store/posts'
+import { useRouter } from 'vue-router'
 
 const post = ref<Post>({
   id: '',
@@ -13,18 +14,11 @@ const post = ref<Post>({
   html: ''
 })
 
-const content = ref('')
-const html = ref('')
+const router = useRouter()
 
 const contentEditable = ref<HTMLDivElement>()
 
-onMounted(() => {
-  if (!contentEditable.value) {
-    throw Error('content not defined')
-  }
-  contentEditable.value.innerText = 'abc'
-  content.value = contentEditable.value.innerText
-})
+const postStore = usePostsStore()
 
 const parseHtml = (content: string) => {
   marked.parse(
@@ -37,33 +31,37 @@ const parseHtml = (content: string) => {
       }
     },
     (_, parseResult) => {
-      html.value = parseResult
+      post.value.html = parseResult
     }
   )
 }
 
 watch(
-  content,
-  debounce(newContent => {
-    parseHtml(newContent)
-  }, 250),
+  () => post.value.markdown,
+  newContent => parseHtml(newContent),
   { immediate: true }
 )
 
 const handleInput = () => {
   if (!contentEditable.value) throw 'No content'
-  content.value = contentEditable.value.innerText
+  post.value.markdown = contentEditable.value.innerText
+}
+
+const handleSubmit = () => {
+  postStore.addTask(post.value)
+  router.push({ name: 'home' })
 }
 </script>
 
 <template>
+  {{ post.html }}
   <input type="text" class="input-text" placeholder="Title here" v-model="post.title" />
   <div class="textarea-container">
     <div contenteditable ref="contentEditable" @input="handleInput" class="textarea-like" />
-    <div v-html="html"></div>
+    <div v-html="post.html"></div>
   </div>
   <div class="button-container">
-    <va-button class="button">Submit</va-button>
+    <va-button class="button" @click="handleSubmit">Add Task</va-button>
   </div>
 </template>
 

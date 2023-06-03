@@ -6,27 +6,31 @@ import { dateToDay } from '../mapping'
 import { Post } from '../types/post'
 
 const initialState: PostState = {
-  posts: [{ id: '1', title: 'Title test', created: DateTime.now().toISODate() || '', markdown: '', html: '' }],
+  posts: [
+    { id: '1', title: 'Title test', created: DateTime.now().toISODate() || '', markdown: 'haha', html: '<p>haha</p>' },
+    { id: '2', title: 'Title test2', created: DateTime.local().plus({ days: 1 }).toISODate() || '', markdown: '', html: '' },
+    { id: '3', title: 'Title test3', created: DateTime.local().plus({ days: 7 }).toISODate() || '', markdown: '', html: '' }
+  ],
   selected: DateTime.now().toISODate() as string
 }
 
 export const usePostsStore = defineStore('posts', {
-  state: (): PostState => ({
-    posts: [{ id: '1', title: 'Title test', created: DateTime.now().toISODate() || '', markdown: '', html: '' }],
-    selected: DateTime.now().toISODate() as string
-}),
+  state: (): PostState => initialState,
 
   actions: {
     setSelectedDate(date: string) {
-      console.log("🚀 ~ file: posts.ts:21 ~ setSelectedDate ~ date:", date)
-      // this.selected = date
-      this.selected= date
+      this.selected = date
+    },
+    addTask(post: Post) {
+      const updatedPost = { ...post, id: (Math.random() * 10000).toFixed().toString(), created: DateTime.now().toISODate() as string }
+
+      this.posts.push(updatedPost)
     }
   },
 
   getters: {
     getSelectedDatePosts: (state: PostState): Post[] => {
-      return state.posts.filter(p => p.created === state.selected)
+      return state.posts.filter(p => p.created <= state.selected)
     },
     getSelectedDateByPeriod: (state: PostState): Period => {
       return dateToDay[state.selected]

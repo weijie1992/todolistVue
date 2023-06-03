@@ -22,13 +22,16 @@ export const usePostsStore = defineStore('posts', {
       this.selected = date
     },
     addTask(post: Post) {
-      const updatedPost = { ...post, id: (Math.random() * 10000).toFixed().toString(), created: DateTime.now().toISODate() as string }
+      const updatedPost = { ...post, id: (Math.random() * 10000).toFixed(), created: DateTime.now().toISODate() as string }
 
       this.posts.push(updatedPost)
     },
     editTask(post: Post) {
-      const index = this.posts.findIndex(p => p.id === post.id)
-      if (!index) {
+      const index = this.posts.findIndex(p => {
+        return p.id === post.id
+      })
+
+      if (index === -1) {
         throw Error('Index not found cant be updated.')
       }
       this.posts[index] = post
